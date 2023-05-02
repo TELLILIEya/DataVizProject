@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="https://d3js.org/d3.v3.min.js"></script>
+  <style >
+  svg {
+    font: 10px helvetica;
+    shape-rendering: crispEdges;
+  }
+
+  .axis path,
+  .axis line {
+    fill: none;
+    stroke: #c1c1c1;
+  }
+ 
+  </style>
+
+</head>
+<body>
+<h2>Fast Chargers available by country</h2>
+
+
+<script >
+
+    // Step 2
+    var margin = 100;
+    var width = 700;
+        height = 400;
+    
+    var svg = d3.select("body")
+      .append("svg")
+      .attr("width", width + margin + 40 )
+      .attr("height", height + margin + 20)
+      .append("g")
+      .attr("transform", "translate(" + (margin+30)/2 +  "," + margin/2 + ")")
+    
+    // Step 1
+    var data = [
+      { year: "2015", China: "12", Europe: "6", USA: "4", Others: "6" },
+      { year: "2016", China: "55", Europe: "9", USA: "3", Others: "6"  },
+      { year: "2017", China: "83", Europe: "11", USA: "3", Others: "11"  },
+      { year: "2018", China: "111", Europe: "26", USA: "4", Others: "14"  },
+      { year: "2019", China: "215", Europe: "25", USA: "13", Others: "17"  },
+      { year: "2020", China: "309", Europe: "38", USA: "17", Others: "22"  },
+      { year: "2021", China: "470", Europe: "49", USA: "22", Others: "28"  }
+      ];
+
+
+
+    var colors = ["#03045E","#0077B6","#f87060","#fbb2a9"];
+    
+    var dataset = d3.layout.stack()(["China", "Europe", "USA", "Others"].map(function(country) {
+      return data.map(function(d) {
+        return {x: d3.time.format("%Y").parse(d.year), y: +d[country]};
+      });
+    }));
+    
+    // Step 3
+    var xScale = d3.scale.ordinal()
+      .domain(dataset[0].map(function(d) { return d.x; }))
+      .rangeRoundBands([0, width], 0.5);
+    
+    var yScale = d3.scale.linear()
+      .domain([0, 600])
+      .range([height, 0]);
+    
+    
+    // Step 4
+    var yAxis = d3.svg.axis()
+      .scale(yScale)
+      .orient("left")
+      .ticks(6)
+      .tickSize(-width, 0, 0)
+      .tickFormat( function(d) { return  d  } );
+    
+    var xAxis = d3.svg.axis()
+      .scale(xScale)
+      .orient("bottom")
+      .tickFormat(d3.time.format("%Y"));
+    
+    svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis);
+    
+    svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis);
+    
+    // Step 5
+    // X label
+    svg.append('text')
+        .attr('x', width/2)
+        .attr('y', height + 30)
+        .attr('text-anchor', 'middle')
+        .style('font-family', 'Helvetica')
+        .style('font-size', 12)
+        .text('Year');
+            
+    // Y label
+    svg.append('text')
+        .attr('text-anchor', 'middle')
+        .attr('transform', 'translate(-30,' + height/2 + ')rotate(-90)')
+        .style('font-family', 'Helvetica')
+        .style('font-size', 12)
+        .text('Fast Chargers available');
+    
+    // Step 6
+    var groups = svg.selectAll("g.bars")
+      .data(dataset)
+      .enter().append("g")
+      .attr("class", "bars")
+      .style("fill", function(d, i) { return colors[i]; })
+      .style("stroke", "#000");
+    
+    var rect = groups.selectAll("rect")
+      .data(function(d) { return d; })
+      .enter()
+      .append("rect")
+      .attr("x", function(d) { return xScale(d.x); })
+      .attr("y", function(d) { return yScale(d.y0 + d.y); })
+      .attr("height", function(d) { return yScale(d.y0) - yScale(d.y0 + d.y); })
+      .attr("width", xScale.rangeBand())
+
+      svg.append("circle").attr("cx",440).attr("cy",height+50).attr("r", 6).style("fill","#f87060")
+      svg.append("circle").attr("cx",300).attr("cy",height+50).attr("r", 6).style("fill", "#fbb2a9")
+      svg.append("circle").attr("cx",200).attr("cy",height+50).attr("r", 6).style("fill", "#0077B6")
+      svg.append("circle").attr("cx",100).attr("cy",height+50).attr("r", 6).style("fill", "#03045E")
+      svg.append("text").attr("x", 450).attr("y", height+50).text("Others").style("font-size", "15px").attr("alignment-baseline","middle")
+      svg.append("text").attr("x", 310).attr("y", height+50).text("United States").style("font-size", "15px").attr("alignment-baseline","middle")
+      svg.append("text").attr("x", 210).attr("y", height+50).text("Europe").style("font-size", "15px").attr("alignment-baseline","middle")
+      svg.append("text").attr("x", 110).attr("y", height+50).text("China").style("font-size", "15px").attr("alignment-baseline","middle")
+</script>
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+
+<head>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="title">Electric cars analysis</div>
+   
+  <nav>
+    <a href="index.html">Intro</a>
+    <a href="http://localhost/DataVizProject/World.html">World</a>
+    <a href="http://localhost/DataVizProject/USA.html">USA</a>
+    <a href="http://localhost/DataVizProject/chargers.html">Chargers</a>
+    <a href="about.html">About</a>
+    <div class="animation start-home"></div>
+  </nav>
+    <h2 >Electric vehicle registration by state for 2021</h1>
+        <div class="containeri">
+        <p>To determine the number of EV registrations in the US, we consulted data from the Alternative Fuels Data Center (AFDC) through the US Department of Energy website.
+       </p>
+    </div>
+        <div class="tooltip"></div>
+    
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+        body {
+        margin: 0 px;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        }
+       
+        .tooltip {
+position: absolute;
+background-color: #3498db;
+color: black;
+padding: 10px;
+font-size: 16px;
+z-index: 10;
+visibility: hidden;
+border-radius: 2px;
+pointer-events: none;
+}
+
+    </style>
+   
+   
+    <script>
+        var width = 1300,
+        height = 500;
+        // Création du SVG 
+        var svg = d3
+        .select("body")
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height);
+        // On rajoute un groupe englobant toute la 
+        //visualisation pour plus tard
+        var g = svg.append("g");
+        //Définition de la projetction
+        // Autres projections : geoMercator, geoNaturalEarth1, 
+      
+        var projection = d3
+        .geoAlbersUsa()
+        .translate([600, 250])
+        .scale([1000]);
+        //mapping des données spatiales à la projection
+var path = d3.geoPath().projection(projection);
+// Chargement des donnees
+d3.json("us-states.json").then(function (jsondata) {
+g.selectAll("path")
+.data(jsondata.features)
+.join("path")
+.attr("fill", "#ccc")
+.attr("d", path);
+});
+//mapping des données spatiales à la projection
+var path = d3.geoPath().projection(projection);
+// On definie une echelle de couleur
+var color = d3
+.scaleQuantize()
+.range(["#cae9ff", "#5fa8d3", "#01497c", "#013a63", 
+"#012a4a"]);
+// Chargement des donnees
+d3.csv("out.csv").then(function (data) {
+//Set input domain for color scale
+color.domain([
+d3.min(data, function (d) {
+return d.valeur;
+}),
+d3.max(data, function (d) {
+return d.valeur;
+})
+]);
+d3.json("us-states.json").then(function (json) {
+
+    for (var i = 0; i < data.length; i++) {
+    //Nom de l'etat
+      var dataState = data[i].state;
+     console.log(dataState);
+     //Valeur associee a l'etat
+     var dataValue = parseFloat(data[i].valeur);
+     //Recherche de l'etat dans le GeoJSON
+      for (var j = 0; j < json.features.length; j++) {
+          var jsonState = json.features[j].properties.name;
+           if (dataState == jsonState){
+//On injecte la valeur de l'Etat dans le json
+json.features[j].properties.value = dataValue;
+//Pas besoin de chercher plus loin
+break;
+}
+}
+}
+g.selectAll("path")
+.data(json.features)
+.join("path")
+.attr("d", path)
+.style("fill", function (d) {
+//on prend la valeur recupere plus haut
+var value = d.properties.value;
+if (value) {
+return color(value);
+} else {
+// si pas de valeur alors en gris
+return "#ccc";
+}
+})
+.on("mouseover", function(event,d) {
+d3.select(this).transition()
+.duration('50')
+.style('opacity', '.55');
+d3.select(".tooltip").transition()
+.duration('50').style("visibility", "visible")
+d3.select(".tooltip").html("<B>Etat <B>: "+d.properties.name+"<br> <B><Number of electric cars><B>: "+d.properties.value+" milles")
+.style("left", event.x + "px")
+.style("top", event.y + "px");
+})
+.on("mouseout", function(d) {
+d3.select(this).transition()
+.duration('50')
+.style('opacity', '.9');
+d3.select(".tooltip").transition()
+.duration('50').style("visibility", "hidden");
+});
+});
+});
+
+</script>
+
+</div>
+<div class="containerp">
+    <p>
+        Top three states with the most registered EVs (as of 12/31/21)
+California – 563,070 (+137,770 EVs YOY)
+Florida – 95,640 (+37,480 EVs YOY)
+Texas – 80,900 (+28,710 EVs YOY)
+It’s no wonder that these top three states have the most registered EVs since they have some of the highest state populations in the US.
+    </p>
+</div>
+<div class="containerp">
+<p>Bottom three states for registered EVs (as of 12/31/21)
+    North Dakota – 380 (+160 EVs YOY)
+    Wyoming – 510 (+180 EVs YOY)
+    South Dakota –680 (+270 EVs YOY)
+    The bottom three states showcase a similar, yet inverse pattern. These are states with smaller populations and thus fewer vehicles on the road. 
+    That being said, Washington D.C. has more than double the number of registered EVs of all three of these states combined.</p>
+</div>
+
+
+<br><br>
+         
+<footer class="site-footer">
+    <div class="container">
+    
+      <hr>
+    </div>
+    <div class="container">
+          <div class="f">Powered by <b>D3</b>.</div>
+
+      </div>
+    </div>
+</footer>
+</body>
+</html>

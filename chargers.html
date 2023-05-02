@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="style.css">
+
+  <script src="https://d3js.org/d3.v3.min.js"></script>
+  <style >
+  svg {
+    font: 10px helvetica;
+    shape-rendering: crispEdges;
+  }
+
+  .axis path,
+  .axis line {
+    fill: none;
+    stroke: #c1c1c1;
+  }
+ 
+  </style>
+
+</head>
+<body>
+  
+  <div class="title">Electric cars analysis</div>
+  
+  <nav>
+    <a href="index.html">Intro</a>
+    <a href="http://localhost/DataVizProject/World.html">World</a>
+    <a href="http://localhost/DataVizProject/USA.html">USA</a>
+    <a href="http://localhost/DataVizProject/chargers.html">Chargers</a>
+    <a href="about.html">About</a>
+    <div class="animation start-home"></div>
+  </nav>
+  <div class="tooltip"></div>
+    <style>
+        body {
+        margin: 0;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        }
+.tooltip {
+    position: absolute;
+background-color: #ffdab9;
+color: black;
+padding: 10px;
+font-size: 16px;
+z-index: 10;
+visibility: hidden;
+border-radius: 2px;
+pointer-events: none;}
+
+    </style>
+<h2>Fast Chargers available by country</h2>
+<script >
+
+    // Step 2
+    var margin = 200;
+    var width = 700;
+        height = 400;
+    
+    var svg = d3.select("body")
+      .append("svg")
+      .attr("width", width + margin + 40 )
+      .attr("height", height + margin + 20)
+      .append("g")
+      .attr("transform", "translate(" + (margin+340)/2 +"," + (margin-150)/2 + ")")
+    
+    // Step 1
+    var data = [
+      { year: "2015", China: "12", Europe: "6", USA: "4", Others: "6" },
+      { year: "2016", China: "55", Europe: "9", USA: "3", Others: "6"  },
+      { year: "2017", China: "83", Europe: "11", USA: "3", Others: "11"  },
+      { year: "2018", China: "111", Europe: "26", USA: "4", Others: "14"  },
+      { year: "2019", China: "215", Europe: "25", USA: "13", Others: "17"  },
+      { year: "2020", China: "309", Europe: "38", USA: "17", Others: "22"  },
+      { year: "2021", China: "470", Europe: "49", USA: "22", Others: "28"  }
+      ];
+
+
+
+    var colors = ["#03045E","#0077B6","#f87060","#fbb2a9"];
+    
+    var dataset = d3.layout.stack()(["China", "Europe", "USA", "Others"].map(function(country) {
+      return data.map(function(d) {
+        return {x: d3.time.format("%Y").parse(d.year), y: +d[country], z: country};
+      });
+    }));
+    
+    // Step 3
+    var xScale = d3.scale.ordinal()
+      .domain(dataset[0].map(function(d) { return d.x; }))
+      .rangeRoundBands([0, width], 0.5);
+    
+    var yScale = d3.scale.linear()
+      .domain([0, 600])
+      .range([height, 0]);
+    
+    
+    // Step 4
+    var yAxis = d3.svg.axis()
+      .scale(yScale)
+      .orient("left")
+      .ticks(6)
+      .tickSize(-width, 0, 0)
+      .tickFormat( function(d) { return  d  } );
+    
+    var xAxis = d3.svg.axis()
+      .scale(xScale)
+      .orient("bottom")
+      .tickFormat(d3.time.format("%Y"));
+    
+    svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis);
+    
+    svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis);
+    
+    // Step 5
+    // X label
+    svg.append('text')
+        .attr('x', width/2)
+        .attr('y', height + 30)
+        .attr('text-anchor', 'middle')
+        .style('font-family', 'Helvetica')
+        .style('font-size', 12)
+        .text('Year');
+            
+    // Y label
+    svg.append('text')
+        .attr('text-anchor', 'middle')
+        .attr('transform', 'translate(-30,' + height/2 + ')rotate(-90)')
+        .style('font-family', 'Helvetica')
+        .style('font-size', 12)
+        .text('Fast Chargers available');
+    
+    // Step 6
+    var groups = svg.selectAll("g.bars")
+      .data(dataset)
+      .enter().append("g")
+      .attr("class", "bars")
+      .style("fill", function(d, i) { return colors[i]; })
+      .style("stroke", "#000");
+    
+    var rect = groups.selectAll("rect")
+      .data(function(d) { return d; })
+      .enter()
+      .append("rect")
+      .attr("x", function(d) { return xScale(d.x); })
+      .attr("y", function(d) { return yScale(d.y0 + d.y); })
+      .attr("height", function(d) { return yScale(d.y0) - yScale(d.y0 + d.y); })
+      .attr("width", xScale.rangeBand())
+      .on("mouseover", function(d) {
+        d3.select(this).transition()
+.duration('50')
+.style('opacity', '.55');
+d3.select(".tooltip").transition()
+.duration('50').style("visibility", "visible")
+d3.select(".tooltip").html(d.z+" "+d.y+" thousand")
+.style("left",(event.x)-100 +"px")
+.style("top",(event.y)+100  +"px");; 
+
+  })
+  .on("mouseout", function() {
+    d3.select(this).transition()
+.duration('50')
+.style('opacity', '.9');
+d3.select(".tooltip").transition()
+.duration('50').style("visibility", "hidden")
+  })
+
+      svg.append("circle").attr("cx",440).attr("cy",height+50).attr("r", 6).style("fill","#f87060")
+      svg.append("circle").attr("cx",300).attr("cy",height+50).attr("r", 6).style("fill", "#fbb2a9")
+      svg.append("circle").attr("cx",200).attr("cy",height+50).attr("r", 6).style("fill", "#0077B6")
+      svg.append("circle").attr("cx",100).attr("cy",height+50).attr("r", 6).style("fill", "#03045E")
+      svg.append("text").attr("x", 450).attr("y", height+50).text("Others").style("font-size", "15px").attr("alignment-baseline","middle")
+      svg.append("text").attr("x", 310).attr("y", height+50).text("United States").style("font-size", "15px").attr("alignment-baseline","middle")
+      svg.append("text").attr("x", 210).attr("y", height+50).text("Europe").style("font-size", "15px").attr("alignment-baseline","middle")
+      svg.append("text").attr("x", 110).attr("y", height+50).text("China").style("font-size", "15px").attr("alignment-baseline","middle")
+</script>
+
+<div class="containerp">
+<p>
+How do electric car charging stations work?
+You can find public charge points in car parks, at supermarkets or just at the side of the road in residential areas, as well as at service stations and other places such as cinemas, pubs and restaurants. 
+Every month more public charging stations are added by a wide selection of providers.
+
+Rapid and ultra-rapid charging points are best if you’re stopping on a long journey, as they typically offer speeds between 50kWh and 350kWh. 
+Going back to our MG4 EV Long Range this means if plugged into a 150kWh+ ultra-rapid charger, charge can go from 10% to 80% in just 34 minutes.
+
+There are also superchargers which offer speeds of up to 150kW. Tesla’s charging network for example offers this supercharging capability.
+</p>
+</div>
+    <br><br>
+         
+<footer class="site-footer">
+    <div class="container">
+    
+      <hr>
+    </div>
+    <div class="container">
+          <div class="f">Powered by <b>D3</b>.</div>
+
+      </div>
+    </div>
+</footer>
+
+
+
+
+</body>
+</html>

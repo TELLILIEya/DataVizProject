@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<html>
+    <head>
+        <link rel="stylesheet" href="style.css">
+		<script src="https://d3js.org/d3.v3.min.js"></script>
+
+
+    </head>
+<body>
+<div class="title">Electric cars analysis</div>
+
+
+<nav>
+    <a href="index.html">Intro</a>
+    <a href="http://localhost/DataVizProject/World.html">World</a>
+    <a href="http://localhost/DataVizProject/USA.html">USA</a>
+    <a href="http://localhost/DataVizProject/chargers.html">Chargers</a>
+    <a href="about.html">About</a>
+    <div class="animation start-home"></div>
+  </nav>
+
+
+<script>
+	var w = 1500;
+	var h = 800;
+	var pw = 600;
+	var ph = 400;
+	var margin = {top: 20, right: 100, bottom: 30, left: 200},
+	pws = pw - margin.left - margin.right,
+	phs = ph - margin.top - margin.bottom;
+	
+	
+	var slideValue = 2;
+	
+	
+			
+		var popupSvg = d3.select("body")
+				.append("svg")
+				.attr("width", pw)
+				.attr("height", ph);
+		
+	//defintion du fond
+		var defs = popupSvg.append("defs");					
+		var pattern2 = defs.append("pattern")
+			.attr({ id:"img1", width:"1600", height:"600", patternUnits:"userSpaceOnUse", patternTransform:"rotate(180)"});
+		image = pattern2.append("image")
+			.attr({"xlink:href":"fond.jpg", x:"0", y:"0", width:"1600", height:"600"});			
+		
+		var buttonColor = defs.append("linearGradient")
+			.attr({id:"grad1",x1:"0%",y1:"0%",x2:"0%",y2:"100%"});
+		buttonColor.append("stop")
+			.attr("offset","0%")
+			.style("stop-color","#62b6cb")
+			.style("stop-opacity",1);
+		buttonColor.append("stop")
+			.attr("offset","100%")
+			.style("stop-color","#3498db")
+			.style("stop-opacity",1);	
+	
+		var buttonColor2 = defs.append("linearGradient")
+			.attr({id:"grad2",x1:"0%",y1:"0%",x2:"0%",y2:"100%"});
+		buttonColor2.append("stop")
+			.attr("offset","0%")
+			.style("stop-color","#62b6cb")
+			.style("stop-opacity",1);
+		buttonColor2.append("stop")
+			.attr("offset","100%")
+			.style("stop-color","#62b6cb")
+			.style("stop-opacity",1);			
+			
+		
+		var group1 = popupSvg.append("g").attr("id","layer1").attr("transform","matrix(-0.6874148,0,0,1,540.5033,125)").attr("fill", "url(#img1)")	;
+		var group2 = popupSvg.append("g").attr("id","layer2").attr("transform","matrix(-0.6874148,0,0,1,540.5033,125)");			
+	
+		
+		
+		
+		
+	//dessin de la voiture	
+		path ="M 640.23853,222.03787 C 640.23853,249.14264 618.26578,271.11539 591.16101,271.11539 C 564.05624,271.11539 542.08349,249.14264 542.08349,222.03787 C 542.08349,194.9331 564.05624,172.96035 591.16101,172.96035 C 618.26578,172.96035 640.23853,194.9331 640.23853,222.03787 L 640.23853,222.03787 z";
+		group2.append("path") 
+			.attr("d", path)
+			.attr("fill", "lightgrey")	
+			.attr("transform","matrix(1.079545,0,0,1.079545,-521.3741,-27.12071)");	
+		path ="M 285.83418,10.247082 C 288.65554,6.9807461 291.87058,4.1737036 297.80466,4.5388804 L 554.11195,4.5388804 L 681.49562,105.68157 C 682.90126,108.65248 683.61253,110.92902 683.96915,112.85091 L 684.45326,202.47755 C 682.08558,207.61498 679.30008,212.00034 674.33227,212.45753 L 644.76683,212.45753 C 644.76683,124.83077 515.22193,124.6518 515.22193,212.45753 L 182.38817,212.45753 C 182.38817,125.17065 51.857393,124.83574 51.857393,212.45753 L 15.791737,212.45753 C 12.71653,211.01909 9.9497784,212.35674 5.8866518,202.02701 L 5.492299,137.57457 C 7.5896054,131.71045 10.205427,129.47594 12.815364,127.20023 L 200.16379,96.077198 L 285.83418,10.247082 z ";
+		group1.append("path") 
+			.attr("d", path)
+			//.attr("fill", "yellow")
+			;	
+		path ="M 640.23853,222.03787 C 640.23853,249.14264 618.26578,271.11539 591.16101,271.11539 C 564.05624,271.11539 542.08349,249.14264 542.08349,222.03787 C 542.08349,194.9331 564.05624,172.96035 591.16101,172.96035 C 618.26578,172.96035 640.23853,194.9331 640.23853,222.03787 L 640.23853,222.03787 z ";
+		group2.append("path") 
+			.attr("d", path)
+			.attr("fill", "lightgrey")		
+			.attr("transform","matrix(1.079545,0,0,1.079545,-58.73586,-27.14299)");	
+		path ="M 226.41173,97.07302 L 290.25519,34.075171 C 291.69464,32.851906 292.82676,31.167654 295.32884,31.538345 L 408.85181,31.538345 L 408.85181,108.70014 L 231.27398,108.70014 C 224.51388,106.03369 223.59914,101.99187 226.41173,97.07302 z ";
+		group2.append("path") 
+			.attr("d", path)
+			.attr("fill", "white");					
+		path ="M 585.23723,89.186408 L 530.52565,34.0864 C 529.0862,32.863135 527.95408,31.178883 525.452,31.549574 L 429.94598,31.549574 L 429.94598,108.71136 L 592.71536,108.71136 C 600.41757,107.17544 590.2821,96.783985 585.23723,89.186408 z ";
+		group2.append("path") 
+			.attr("d", path)
+			.attr("fill", "white");	
+	
+			//0 = tout gris, 800=tt vert VL 7 et VL elec 8
+	var Tx = [];  //tableau pour stocker les données de l'année 2019 jusqu'a 2021
+	Tx[0] = 2.49 //2019
+	Tx[1] = 4.11 //2020
+	Tx[2] = 8.57 //2021
+	Tx[3] = 23 //2025
+	
+	
+	
+	
+	
+	
+	
+	Txinit = Tx[0]; // initialisation de l'année par défaut : 2019 tx[0]
+	yearSelect=0;
+	TxCommentText = "% des véhicules sont électriques";
+	var TxText = popupSvg.append("g")
+			.append("text")
+			.attr("x", 290)
+			.attr("y", 100)
+		  .style("text-anchor", "middle")
+			.attr("class", "textGraph")
+			.attr("fill","#102542")
+		  .text(Txinit.toFixed(2) + TxCommentText);
+	
+	
+		
+			
+	  
+		
+		  
+	  
+		
+		  
+	var year1 = popupSvg.append("g").attr("class","fondYear")
+		.attr("transform","translate(150,50)");
+		year1.append("rect")
+			.attr({x:0,y:0,rx:5,ry:5,width: 50, height: 30,fill:"url(#grad2)"});
+		year1.append("text")
+		  .attr("dy", "1.3em")
+		  .attr("dx", "8px")
+		  .attr("fill","white")
+		  .style("text-anchor", "start")
+		  .text("2019");	
+		year1.on("click",function() {
+			yearSelect=0;
+			d3.selectAll(".fondYear rect").attr("fill","url(#grad1)");
+			year1.select("rect").attr("fill","url(#grad2)");		
+			image.transition()
+					.duration(1000)
+					.attr("x", 110 +Math.round(6.80* Tx[yearSelect]) );
+			Txinit = Tx[yearSelect] ;
+			TxText.text(Txinit.toFixed(2) + TxCommentText);			
+		});
+	
+		  
+	var year2 = popupSvg.append("g").attr("class","fondYear")
+		.attr("transform","translate(225,50)");
+		year2.append("rect")
+			.attr({x:0,y:0,rx:5,ry:5,width: 50, height: 30,fill:"url(#grad1)"});
+		year2.append("text")
+		  .attr("dy", "1.3em")
+		  .attr("dx", "8px")
+		  .attr("fill","white")
+		  .style("text-anchor", "start")
+		  .text("2020");
+		year2.on("click",function() {
+			yearSelect=1;
+			d3.selectAll(".fondYear rect").attr("fill","url(#grad1)");
+			year2.select("rect").attr("fill","url(#grad2)");		
+			image.transition()
+					.duration(1000)
+					.attr("x", 110 +Math.round(6.80* Tx[yearSelect]) );
+			Txinit = Tx[yearSelect] ;
+			TxText.text(Txinit.toFixed(2) + TxCommentText);			
+		});
+		var year3 = popupSvg.append("g").attr("class","fondYear")
+		.attr("transform","translate(300,50)");
+		year3.append("rect")
+			.attr({x:0,y:0,rx:5,ry:5,width: 50, height: 30,fill:"url(#grad1)"});
+		year3.append("text")
+		  .attr("dy", "1.3em")
+		  .attr("dx", "8px")
+		  .attr("fill","white")
+		  .style("text-anchor", "start")
+		  .text("2021");	  
+		year3.on("click",function() {
+			yearSelect=2;
+			d3.selectAll(".fondYear rect").attr("fill","url(#grad1)");
+			year3.select("rect").attr("fill","url(#grad2)");		
+			image.transition()
+					.duration(1000)
+					.attr("x", 110 +Math.round(6.80* Tx[yearSelect]) );
+			Txinit = Tx[yearSelect] ;
+			TxText.text(Txinit.toFixed(2) + TxCommentText);			
+		});
+	
+		var year4 = popupSvg.append("g").attr("class","fondYear")
+		.attr("transform","translate(375,50)");
+		year4.append("rect")
+			.attr({x:0,y:0,rx:5,ry:5,width: 50, height: 30,fill:"url(#grad1)"});
+		year4.append("text")
+		  .attr("dy", "1.3em")
+		  .attr("dx", "8px")
+		  .attr("fill","white")
+		  .style("text-anchor", "start")
+		  .text("2025");
+		year4.on("click",function() {
+			yearSelect=3;
+			d3.selectAll(".fondYear rect").attr("fill","url(#grad1)");
+			year4.select("rect").attr("fill","url(#grad2)");		
+			image.transition()
+					.duration(1000)
+					.attr("x", 110 +Math.round(6.80* Tx[yearSelect]) );
+			Txinit = Tx[yearSelect] ;
+			TxText.text(Txinit.toFixed(2) + TxCommentText);			
+		});
+		  
+	
+	
+	//decalage du fond à la bonne place	
+		setTimeout( function (){
+			image.transition()
+					.duration(1000)
+					.attr("x", 110 +Math.round(6.80* Tx[yearSelect]));
+		}, 1000 )
+	
+			</script>
+
+
+<div class="intro">
+<p>The growth of electric vehicles and hybrid electric vehicles is increasing at a startling rate. 
+According to JP Morgan, by the year 2025, most electric vehicles and hybrid electric vehicles will account for almost 25 % of cars on sale. 
+This not only monopolizes the electric car industry but also enables for more innovation and advancements surrounding sustainable transportation. 
+In turn, according to CNBC, by 2030, electric cars are expected to increase from 3 million to 125 million. 
+This will equate one car for every person in Japan, the 11th most populated country in the world.</p>
+</div>
+<br><br>
+         
+<footer class="site-footer">
+    <div class="container">
+    
+      <hr>
+    </div>
+    <div class="container">
+          <div class="f">Powered by <b>D3</b>.</div>
+
+      </div>
+    </div>
+</footer>
+
+
+</body>
+
+</html>

@@ -1,0 +1,177 @@
+<!DOCTYPE html> 
+<meta charset="utf-8">
+
+<head>
+    <link rel="stylesheet" href="style.css">
+
+
+</head>
+
+
+<body> 
+    <div class="title">Electric cars analysis</div>
+
+  <nav>
+    <a href="index.html">Intro</a>
+    <a href="http://localhost/DataVizProject/World.html">World</a>
+    <a href="http://localhost/DataVizProject/USA.html">USA</a>
+    <a href="http://localhost/DataVizProject/chargers.html">Chargers</a>
+    <a href="about.html">About</a>
+    <div class="animation start-home"></div>
+  </nav>
+    
+   
+    <div class="tooltip"></div>
+    <style>
+        body {
+        margin: 0;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        }
+.tooltip {
+    position: absolute;
+background-color: #ffdab9;
+color: black;
+padding: 10px;
+font-size: 16px;
+z-index: 10;
+visibility: hidden;
+border-radius: 2px;
+pointer-events: none;}
+
+    </style>
+   
+    
+    <h1>Global electric car sales by key markets, 2010-2020</h1>
+  
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+   
+    <script>
+        var margin = {top : 30, right : 60, bottom: 60, left: 60},
+        width = 500 - margin.left - margin.right,
+        height = 400 - margin.top - margin.bottom;
+        
+  var svg = d3.select("body").append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+        
+
+        var x = d3.scaleBand()
+                    .range([0, width])
+                 .padding(0.3);
+        const y = d3.scaleLinear()
+                .range([height, 0]);
+  
+        
+   
+         function update(selectedVar){
+            d3.csv("global-electric-car-sales-by-key-markets-2010-2020.csv").then(function(data){
+
+            
+           
+            x.domain(data.map(function(d){return d.year}));
+            y.domain([0, d3.max(data, function(d) { return +d[selectedVar]; })]);
+
+            svg.append("g")
+            .attr("transform", "translate(0," + height + ")")
+            .call(d3.axisBottom(x))
+            .append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("x", height/2)
+            .attr("y", -40)
+            .attr("stroke", "black");
+            svg.append("g")
+            .call(d3.axisLeft(y))
+            .append("text")
+            .attr("x", width/2+20)
+            .attr("y", height+40)
+            .attr("stroke", "#102542");
+
+    
+            
+           
+     const u = svg.selectAll("rect")
+            .data(data)
+            u.join("rect")
+                .transition()
+                .attr("x", d => x(d.year))
+                .attr("y", d => y(d[selectedVar]))
+                .attr("width", x.bandwidth())
+                .attr("height", d => height - y(d[selectedVar]))
+                .attr("fill", "#e74c3c");
+                                    
+        d3.selectAll("rect")
+        .on("mouseover", function(event,d) {
+d3.select(this).transition()
+.duration('50')
+.style('opacity', '.55');
+d3.select(".tooltip").transition()
+.duration('50').style("visibility", "visible")
+d3.select(".tooltip").html(d.year+'<br>'+selectedVar+' : ' +d[selectedVar])
+.style("left",(event.x) +"px")
+.style("top",(event.y)  +"px");; 
+
+})
+.on("mouseout", function(d) {
+d3.select(this).transition()
+.duration('50')
+.style('opacity', '.9');
+d3.select(".tooltip").transition()
+.duration('50').style("visibility", "hidden")
+
+});
+            })};
+              
+    update('World')
+
+
+
+
+
+</script>
+    
+  
+<div class="btn-container">
+    <button  class="space-btn" onclick="update('China')">China</button>
+    <button class="space-btn"  onclick="update('USA')">USA</button>
+    <button  class="space-btn" onclick="update('Europe')">Europe</button>
+    <button  class="space-btn" onclick="update('Rest of the world')">ROTW</button>
+    <button  class="space-btn" onclick="update('World')">World</button>
+    <button  class="space-btn" onclick="update('Market Share')">MS</button>
+</div>
+<div class="world">
+    <p>
+        In 2010, the total global electric car sales were around 17,710, with China accounting for 5,579, Europe for 10,073, and the USA for 345.
+<br>
+However, over the years, the sales of electric cars have significantly increased. 
+In 2020, the total global electric car sales were around 3,207,327, which is a significant increase from 2010. 
+China remains the largest market for electric cars, with 1,367,442 electric cars sold in 2020, followed closely by Europe with 1,365,067 electric cars sold. The USA is still lagging behind with 328,000 electric cars sold in 2020.
+<br>
+This chart suggests that there is a growing interest in electric cars worldwide, with China and Europe leading the way in electric vehicle adoption. 
+It also indicates that electric cars are becoming increasingly popular as a viable alternative to traditional gasoline-powered vehicles.
+    </p>
+
+</div>
+ 
+
+<br><br>
+         
+<footer class="site-footer">
+    <div class="container">
+    
+      <hr>
+    </div>
+    <div class="container">
+          <div class="f">Powered by <b>D3</b>.</div>
+
+      </div>
+    </div>
+</footer>
+
+        
+</body>
